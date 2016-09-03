@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Domains\User\Repository\UserRepository;
-//use Response;
 
 class UserController extends Controller
 {
