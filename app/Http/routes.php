@@ -14,3 +14,13 @@
 $app->get('/', function () use ($app) {
     return $app->version();
 });
+
+
+Route::group(['prefix' => 'v1'], function () {
+    Route::get('users', 'UserController@index');
+
+    Route::resource('authenticate', 'AuthController', ['only' => ['index']]);
+    Route::post('authenticate', 'AuthController@authenticate');
+
+
+});
