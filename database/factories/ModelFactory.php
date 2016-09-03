@@ -11,9 +11,15 @@
 |
 */
 
-$factory->define(App\User::class, function ($faker) {
+$factory->define(App\Domains\User\Model\User::class, function (Faker\Generator $faker) {
     return [
-        'name' => $faker->name,
-        'email' => $faker->email,
+        'id'          => Uuid::generate(),
+        'name'        => $faker->name,
+        'email'       => $faker->safeEmail,
+        'password'    => bcrypt(str_random(10)),
+        'api_key'     => str_random(30),
+        'api_secret'  => str_random(50),
+        'role'        => str_random(5),
+        'status'      => rand(1, 0),
     ];
 });
