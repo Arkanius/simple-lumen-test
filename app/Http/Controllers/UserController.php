@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Domains\User\Repository\UserRepository;
+use App\Domains\User\Service\UserService;
 use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
@@ -54,11 +55,18 @@ class UserController extends Controller
             ], 422);
         }
 
+        if (!empty($this->repository->findBy('email', $request->email))) {
+            return response()->json(['message' => $this->validationErrorMessage.'.  Email already in use', 'data' => ''], 422);
+        }
+
         $result = $this->repository->create($request->all());
 
         if (empty($result)) {
             return response()->json(['message' => $this->internalErrorMessage, 'data' => ''], 500);
         }
+
+        $emailService = new UserService();
+        $emailService->sendRegisterEmail([$request->email]);
 
         return response()->json([
             'message' => $this->resourceCreatedMessage,
