@@ -4,14 +4,17 @@ namespace App\Domains\User\Repository;
 
 use App\Domains\RepositoryInterface;
 use App\Domains\User\Model\User;
+use Webpatser\Uuid\Uuid;
 
 class UserRepository implements RepositoryInterface
 {
     private $model;
+    private $apiSecretSize;
 
     public function __construct()
     {
         $this->model = new User;
+        $this->apiSecretSize = 50;
     }
 
     /**
@@ -62,6 +65,12 @@ class UserRepository implements RepositoryInterface
             return false;
         }
 
+        $data['id']           = Uuid::generate();
+        $data['password']     = app('hash')->make($data['password']);
+        $data['role']         = 'user';
+        $data['status']       = 1;
+        $data['api_key']      = str_random($this->apiSecretSize);
+        $data['api_secret']   = str_random($this->apiSecretSize);
 
         return $this->model->create($data);
     }

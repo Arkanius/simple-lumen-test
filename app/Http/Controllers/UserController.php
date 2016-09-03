@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Domains\User\Repository\UserRepository;
+use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
@@ -27,6 +28,41 @@ class UserController extends Controller
         return response()->json([
             'message' => '',
             'result'  => $this->repository->findAll()
+        ], 200);
+    }
+
+    /**
+     * Create user
+     *
+     * @param Request $request
+     */
+    public function store(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'name'           => 'required|max:255',
+            'email'          => 'required|email',
+            'password'       => 'required|max:50',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => [
+                    $this->validationErrorMessage,
+                    $validator->errors()
+                ],
+                'data' => ''
+            ], 422);
+        }
+
+        $result = $this->repository->create($request->all());
+
+        if (empty($result)) {
+            return response()->json(['message' => $this->internalErrorMessage, 'data' => ''], 500);
+        }
+
+        return response()->json([
+            'message' => $this->resourceCreatedMessage,
+            'data' => ''
         ], 200);
     }
 }
